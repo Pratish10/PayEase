@@ -12,6 +12,7 @@ import { ErrorResponse } from "./types/error";
 import { IGetUserAuthInfoRequest } from "./types/express";
 import cors from "cors";
 import morgan from "morgan";
+import { SuccessResponse } from "./types/success";
 
 const app: Express = express();
 app.use(cookieParser());
@@ -41,7 +42,11 @@ app.use(function (
 });
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Server is up and running");
+  const successResponse: SuccessResponse<string> = {
+    success: true,
+    message: "Server is Up and Running",
+  };
+  res.json(successResponse);
 });
 
 app.listen(port, () => {
