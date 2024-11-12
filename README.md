@@ -18,7 +18,7 @@ The project is divided into two main parts:
 
 ### Backend
 
-The backend provides several API routes for managing accounts, authentication, and user details. You can find detailed information about these routes in the backend's [README file](./backend/Readme.md).
+The backend provides several API routes for managing accounts, authentication, and user details. You can find detailed information about these routes in the backend's [README file](./backend/README.md).
 
 ### Frontend
 
