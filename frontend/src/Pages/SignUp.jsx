@@ -29,7 +29,7 @@ const SignUp = () => {
 
       if (res.success) {
         setLoading(false);
-        navigate("/dashboard");
+        navigate("/signin");
       } else {
         setApiError(res.message || "An unknown error occurred");
         setLoading(false);
