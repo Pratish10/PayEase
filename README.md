@@ -2,6 +2,10 @@
 
 Welcome to the PayEase! This project provides a secure platform for transferring money, managing user accounts, and viewing transaction details. It consists of both frontend and backend components.
 
+## Demo
+
+https://github.com/user-attachments/assets/90ab424e-67e8-4856-9434-631b441e06b4
+
 ## Features
 
 - **User Authentication**: Signup and Signin functionalities.
