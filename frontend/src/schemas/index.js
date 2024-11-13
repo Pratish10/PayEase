@@ -21,7 +21,7 @@ export const updateUserSchema = z.object({
     .string()
     .min(1, { message: "First Name is Required" })
     .optional(),
-  lastName: z.string().min(1, { message: "First Name is Required" }).optional(),
+  lastName: z.string().min(1, { message: "Last Name is Required" }).optional(),
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters long" })

@@ -1,46 +1,31 @@
-import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { UserDetail } from "./UserDetail";
 import { motion, AnimatePresence } from "framer-motion";
-import PropTypes from "prop-types";
+import { getUsers } from "../api/api";
+import { userAtom } from "../../recoil/atom";
+import { useRecoilValue } from "recoil";
 
-export const Users = ({ userId }) => {
+export const Users = () => {
   const [filter, setFilter] = useState("");
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const user = useRecoilValue(userAtom);
 
   useEffect(() => {
     const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(
-          `https://paytm-backend-liart.vercel.app/app/v1/user/bulk?filter=${filter}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        if (res?.data.success) {
-          const filteredUsers = res?.data?.data.filter(
-            (item) => item._id !== userId
-          );
-          setUsers(filteredUsers);
-        }
-      } catch (error) {
-        console.error("Error fetching users data:", error);
-      } finally {
-        setLoading(false);
-      }
+      setLoading(true);
+      const data = await getUsers("/app/v1/user/bulk", filter);
+      setUsers(data.filter((item) => item._id !== user._id));
+      setLoading(false);
     };
 
-    const timeoutId = setTimeout(() => {
+    const debounceFetch = setTimeout(() => {
       fetchUsers();
     }, 500);
 
-    return () => clearTimeout(timeoutId);
-  }, [filter, userId]);
+    return () => clearTimeout(debounceFetch);
+  }, [filter, user]);
 
   return (
     <div className="p-4 space-y-6">
@@ -87,8 +72,4 @@ export const Users = ({ userId }) => {
       )}
     </div>
   );
-};
-
-Users.propTypes = {
-  userId: PropTypes.string.isRequired,
 };

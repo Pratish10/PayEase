@@ -1,6 +1,6 @@
-# Payments App Backend
+# PayEase Backend
 
-This is the backend server for the Payments App. It provides various API endpoints for account management, user authentication, and user interactions. The server is built with Node.js and Express.
+This is the backend server for the PayEase. It provides various API endpoints for account management, user authentication, and user interactions. The server is built with Node.js and Express.
 
 ## Getting Started
 

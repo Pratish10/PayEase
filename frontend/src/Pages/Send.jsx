@@ -3,11 +3,11 @@ import { Card } from "../components/Card";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { transferSchema } from "../schemas";
-import { useEffect, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "../components/Input";
-import axios from "axios";
+import { sendMoney } from "../api/api";
 
 const Send = () => {
   const [searchParams] = useSearchParams();
@@ -21,25 +21,17 @@ const Send = () => {
     setValue,
   } = useForm({ resolver: zodResolver(transferSchema) });
 
-  const [isPending, startTransition] = useTransition();
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (data) => {
-    startTransition(async () => {
-      const res = await axios.post(
-        "https://paytm-backend-liart.vercel.app/app/v1/accounts/transfer",
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      if (res.data.success) {
-        navigate("/dashboard");
-      } else {
-        console.log(res.data?.error);
-      }
-    });
+  const onSubmit = async (data) => {
+    setLoading(true);
+    const res = await sendMoney("/app/v1/accounts/transfer", data);
+    if (res.success) {
+      setLoading(false);
+      navigate("/dashboard");
+    } else {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -66,6 +58,7 @@ const Send = () => {
             type="number"
             register={register}
             error={errors.amount}
+            disabled={loading}
           />
           <motion.div
             className="flex flex-col items-center justify-center space-y-4"
@@ -75,9 +68,9 @@ const Send = () => {
           >
             <button
               className="px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isPending}
+              disabled={loading}
             >
-              {isPending ? (
+              {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin inline-block" />
                   Sending...

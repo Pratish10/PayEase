@@ -1,15 +1,13 @@
-import PropTypes from "prop-types";
+import { useRecoilValue } from "recoil";
+import { userAtom } from "../../recoil/atom";
 
-export const Balance = ({ value }) => {
+export const Balance = () => {
+  const user = useRecoilValue(userAtom);
   return (
     <div className="container">
       <h1 className="text-2xl">
-        Your Balance: <span>Rs {value}</span>
+        Your Balance: <span>Rs {user?.balance ?? 0}</span>
       </h1>
     </div>
   );
-};
-
-Balance.propTypes = {
-  value: PropTypes.number,
 };

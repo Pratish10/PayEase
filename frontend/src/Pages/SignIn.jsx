@@ -3,11 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../schemas";
 import { Input } from "../components/Input";
-import { useTransition } from "react";
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import axios from "axios";
+import { signin } from "../api/api";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -17,21 +17,15 @@ const SignIn = () => {
     formState: { errors },
   } = useForm({ resolver: zodResolver(loginSchema) });
 
-  const [isPending, startTransition] = useTransition();
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (data) => {
-    startTransition(async () => {
-      const res = await axios.post(
-        "https://paytm-backend-liart.vercel.app/app/v1/user/login",
-        data
-      );
-      if (res.data.success) {
-        localStorage.setItem("token", res?.data.data);
-        navigate("/dashboard");
-      } else {
-        console.log(res.data?.error);
-      }
-    });
+  const onSubmit = async (data) => {
+    setLoading(true);
+    const res = await signin("/app/v1/user/login", data);
+    if (res.success) {
+      setLoading(false);
+      navigate("/dashboard");
+    }
   };
 
   return (
@@ -48,6 +42,7 @@ const SignIn = () => {
             type="email"
             register={register}
             error={errors.email}
+            disabled={loading}
           />
           <Input
             label="Password"
@@ -55,6 +50,7 @@ const SignIn = () => {
             type="password"
             register={register}
             error={errors.password}
+            disabled={loading}
           />
           <motion.div
             className="flex flex-col items-center justify-center space-y-4"
@@ -64,9 +60,9 @@ const SignIn = () => {
           >
             <button
               className="px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isPending}
+              disabled={loading}
             >
-              {isPending ? (
+              {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin inline-block" />
                   Signing In...

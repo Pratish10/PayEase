@@ -1,38 +1,25 @@
 import { useEffect, useState } from "react";
 import { AppBar } from "../components/AppBar";
 import { Balance } from "../components/Balance";
-import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { Users } from "../components/Users";
+import { getCurrentUser } from "../api/api";
+import { useSetRecoilState } from "recoil";
+import { userAtom } from "../../recoil/atom";
 
 const Dashboard = () => {
-  const [user, setUser] = useState(null);
+  const setUser = useSetRecoilState(userAtom);
   const [loading, setLoading] = useState(false);
 
-  const token = localStorage.getItem("token");
-
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(
-          "https://paytm-backend-liart.vercel.app/app/v1/user",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setUser(res.data?.data || {});
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
-      }
+    const fetchCurrentUser = async () => {
+      setLoading(true);
+      const data = await getCurrentUser("/app/v1/user");
+      setUser(data);
+      setLoading(false);
     };
-
-    fetchUser();
-  }, [token]);
+    fetchCurrentUser();
+  }, []);
 
   if (loading) {
     return (
@@ -44,15 +31,15 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100">
-      <AppBar firstName={user?.firstName ?? ""} />
+      <AppBar />
       <div className="pt-20">
         <div className="container mx-auto px-4 space-y-8">
           <div className="bg-white shadow-md rounded-lg p-6">
-            <Balance value={user?.balance ?? 0} />
+            <Balance />
           </div>
 
           <div className="bg-white shadow-md rounded-lg p-6">
-            <Users userId={user?._id ?? ""} />
+            <Users />
           </div>
         </div>
       </div>
