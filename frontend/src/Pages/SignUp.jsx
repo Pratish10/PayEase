@@ -18,13 +18,25 @@ const SignUp = () => {
   } = useForm({ resolver: zodResolver(signUpSchema) });
 
   const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
 
   const onSubmit = async (data) => {
     setLoading(true);
-    const res = await signup("/app/v1/user/signup", data);
-    if (res.success) {
+    setApiError("");
+
+    try {
+      const res = await signup("/app/v1/user/signup", data);
+
+      if (res.success) {
+        setLoading(false);
+        navigate("/dashboard");
+      } else {
+        setApiError(res.message || "An unknown error occurred");
+        setLoading(false);
+      }
+    } catch (error) {
+      setApiError(error.message || "An error occurred while signing in");
       setLoading(false);
-      navigate("/signin");
     }
   };
 
@@ -35,6 +47,16 @@ const SignUp = () => {
         description="Enter your Information to create an account"
         className="w-full max-w-md"
       >
+        {apiError && (
+          <motion.div
+            className="text-red-600 text-sm font-semibold p-2 rounded-md bg-red-100"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            {apiError}
+          </motion.div>
+        )}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <Input
             label="First Name"
